@@ -3,13 +3,16 @@ const User = require('../models/User');
 const fs = require('fs'); // for files
 const jwt = require('jsonwebtoken');
 
-
+//?id=1225
+//{}
 exports.createArticle = (req, res, next) => {
 // userId: req.body.userId
     const article = new Article({
-       title: req.body.title, description: req.body.description, 
+       title: req.body.title, 
+       description: req.body.description, 
        imageUrl: req.body.imageUrl,
-       publish:req.body.publish
+       publish:req.body.publish ,
+       username: req.body.username
     });
     article.save()
     .then(() => {
@@ -26,30 +29,43 @@ exports.createArticle = (req, res, next) => {
   };
   
   exports.createArticleFileImage = (req, res, next) => {
-      const article = !req.file ? new Article({ 
-        title: req.body.title, 
-        description: req.body.description, 
-        imageUrl: req.body.imageUrl, 
-        publish: req.body.publish,
-        // userId: req.body.userId
-      }): new Article({ 
-        title: req.body.title, 
-        description: req.body.description,  
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`, 
-        publish: req.body.publish,
-        // userId: req.body.userId
-     });
-      article.save()
-      .then(() => {
-          res.status(201).json({
-          message: 'Post saved successfully!'
-          });
-        })
-      .catch((error) => {
-          res.status(400).json({
-            error: error
-          });
-        });
+    const thingObject = JSON.parse(req.body.thing);
+  delete thingObject._id;
+  const thing = new Thing({
+    ...thingObject,
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  });
+  thing.save()
+    .then(() => res.status(201).json({ message: 'Objet enregistré !'}))
+    .catch(error => res.status(400).json({ error }));
+
+
+    //   const article = !req.file ? new Article({ 
+    //     title: req.body.title, 
+    //     description: req.body.description, 
+    //     imageUrl: req.body.imageUrl, 
+    //     username: req.body.username, 
+    //     publish: req.body.publish,
+    //     // userId: req.body.userId
+    //   }): new Article({ 
+    //     title: req.body.title, 
+    //     description: req.body.description, 
+    //     username: req.body.username, 
+    //     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`, 
+    //     publish: req.body.publish,
+    //     userId: req.body.userId
+    //  });
+    //   article.save()
+    //   .then(() => {
+    //       res.status(201).json({
+    //       message: 'Post saved successfully!'
+    //       });
+    //     })
+    //   .catch((error) => {
+    //       res.status(400).json({
+    //         error: error
+    //       });
+    //     });
     };
     
 

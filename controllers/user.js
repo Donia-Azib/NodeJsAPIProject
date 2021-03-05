@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const Article = require('../models/Article');
 const User = require('../models/User')
 const jwt = require('jsonwebtoken');
 
@@ -44,11 +45,33 @@ exports.login = (req, res, next) => {
 exports.getUser=async(req,res,next)=>{
   try {
     let userD = await userDetail(req);
+    let articleU = await Article.count({userId: userD._id})
     User.findOne({
      // _id: req.params.id
      _id:userD._id
     })
     .then( (thing) => { 
+      thing.nbArticle = articleU ? articleU : 0
+      res.status(200).json(thing);  
+    })
+    .catch((error) => {
+        res.status(404).json({ error: error }); 
+    });
+  } catch (error) {
+    res.status(404).json({ error: error });
+  }
+}
+
+exports.getUserInfo=async(req,res,next)=>{
+  try {
+    let user_id  = req.params._id
+    let articleU = await Article.count({userId: user_id})
+    User.findOne({
+     // _id: req.params.id
+     _id:user_id
+    })
+    .then( (thing) => { 
+      thing.nbArticle = articleU ? articleU : 0
       res.status(200).json(thing);  
     })
     .catch((error) => {
@@ -64,16 +87,18 @@ exports.modifyUser = async(req, res, next) => {
     //email inexistant
       var userD = await userDetail(req);
       var exist = await User.find({email:req.body.email})
-      if(exist.length > 0) 
-        {res.status(400).send({ message: "Email exist" })
-        console.log(exist.length);}
+      if(exist.length > 0 && userD.email != req.body.email) 
+        {
+          res.status(400).send({ message: "Email exist",update:false })
+          console.log(exist.length);
+        }
       else
       {
         var user = await User.updateOne({_id : userD._id},req.body)
         if(!user)
             res.status(404).send({ message: "Cannot GET user" })
          else
-          res.status(200).send({ message: "User updated..!" }) 
+          res.status(200).send({ message: "User updated..!",updated : true }) 
       }
   } catch (error) {
       res.status(400).send({ message: "Cannot Update User " })

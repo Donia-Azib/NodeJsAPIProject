@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 
 const thingSchema = mongoose.Schema({
   title: { type: String, required: true },
-  description: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-  userId: { type: String, required: true },
-  publish :{type:Boolean,required:true}
+  description: { type: String },
+  imageUrl: { type: String},
+  userId: { type: String},
+  username: { type: String },
+  publish :{type:Boolean}
   // price: { type: Number },
 });
 

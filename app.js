@@ -1,3 +1,4 @@
+//placerez votre application Express :
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -20,7 +21,7 @@ mongoose.connect('mongodb://localhost:27017/myapp',
     .catch(err => console.error('Something went wrong', err));
  
 
-
+//CORS :3000 :4200
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
